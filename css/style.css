@@ -505,28 +505,55 @@ main, .nav { position: relative; z-index: 2; }
 .work-card p { font-size: clamp(.72rem, 1.6vh, .82rem); color: rgba(253, 253, 251, .62); padding: 0 1.2rem clamp(.6rem, 1.6vh, 1.1rem); }
 
 /* ─── Contact ─── */
-.contact-title { font-size: clamp(2rem, 6.4vh, 4.4rem); margin-bottom: .8rem; }
-.contact-sub { color: rgba(253,253,251,.72); max-width: 460px; margin-bottom: clamp(1.2rem, 3.4vh, 2.6rem); font-size: clamp(.84rem, 1.8vh, .95rem); }
-.contact-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.1rem;
+.contact-title { font-size: clamp(2rem, 6.4vh, 4.4rem); margin-bottom: .6rem; }
+.contact-sub { color: rgba(253,253,251,.72); max-width: 460px; margin-bottom: clamp(.9rem, 2.6vh, 2rem); font-size: clamp(.84rem, 1.8vh, .95rem); }
+
+/* the destination board — every way to reach us, written in lights */
+.contact-lines { display: flex; flex-direction: column; }
+.contact-line {
+  position: relative;
+  display: flex; align-items: center;
+  gap: clamp(1rem, 3vw, 2.4rem);
+  padding: clamp(.6rem, 1.9vh, 1.3rem) clamp(.6rem, 1.6vw, 1.4rem);
+  border-top: 1px solid rgba(199, 158, 98, .2);
+  border-radius: 4px;
+  transition: background .45s ease, transform .45s cubic-bezier(.2,.7,.3,1), border-radius .45s;
 }
-.contact-card {
-  display: flex; flex-direction: column; gap: .35rem;
-  padding: clamp(1rem, 2.4vh, 1.5rem) 1.5rem;
-  border: 1px solid rgba(199, 158, 98, .25); border-radius: 14px;
-  background: rgba(7, 28, 48, .45);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transition: border-color .35s, transform .35s, box-shadow .35s;
+.contact-line:last-child { border-bottom: 1px solid rgba(199, 158, 98, .2); }
+a.contact-line:hover {
+  background: linear-gradient(90deg, rgba(255, 255, 255, .09) 0%, rgba(199, 158, 98, .07) 70%, transparent 100%);
+  transform: translateX(12px);
+  border-radius: 14px;
 }
-a.contact-card:hover {
-  border-color: var(--gold);
-  transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(4, 12, 24, .5), 0 0 24px rgba(199,158,98,.18);
+.cl-label {
+  flex: none; min-width: 96px; text-align: center;
+  font-size: .62rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold-bright);
+  border: 1px solid rgba(199, 158, 98, .4); border-radius: 100px;
+  padding: .45em 1em .4em;
+  background: rgba(7, 28, 48, .55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);
 }
-.contact-k { font-size: .66rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-.contact-v { font-size: clamp(.8rem, 1.8vh, .9rem); color: var(--white); word-break: break-word; }
+.cl-text {
+  font-family: var(--font-display); font-weight: 500; line-height: 1.08;
+  font-size: clamp(1.5rem, 5.4vh, 3.4rem);
+  letter-spacing: .01em;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 22px rgba(199, 158, 98, .16));
+}
+.cl-long { font-size: clamp(.95rem, 3vh, 2rem); word-break: break-all; }
+.cl-gold  { background-image: linear-gradient(100deg, #ffe9c4 0%, #e4c48d 45%, #b98a4e 100%); }
+.cl-ice   { background-image: linear-gradient(100deg, #ffffff 0%, #cfe3f7 50%, #8fb6de 100%); }
+.cl-rose  { background-image: linear-gradient(100deg, #f6d9c3 0%, #e8b39a 50%, #d18f96 100%); }
+.cl-pearl { background-image: linear-gradient(100deg, #f6efdf 0%, #d8cdb4 55%, #9fb3c8 100%); }
+.cl-go {
+  margin-left: auto; flex: none;
+  color: var(--gold-bright); font-size: clamp(1rem, 2.6vh, 1.5rem); font-style: normal;
+  opacity: 0; transform: translateX(-10px) rotate(-45deg) scale(.6);
+  transition: opacity .4s, transform .5s cubic-bezier(.2,1.2,.4,1);
+}
+a.contact-line:hover .cl-go { opacity: 1; transform: translateX(0) rotate(0deg) scale(1); }
 .footer {
   position: absolute; bottom: 0; left: 0; right: 0;
   padding: 1.2rem 1.4rem 1.4rem; text-align: center;
@@ -577,6 +604,11 @@ a.contact-card:hover {
   .work-img { height: auto; aspect-ratio: 16 / 9; }
   .marquee-track .client { width: 100px; }
   .client-ring { width: 86px; height: 86px; }
+  .contact-line { flex-direction: column; align-items: flex-start; gap: .55rem; }
+  .cl-label { min-width: 0; }
+  .cl-text { font-size: clamp(1.4rem, 7.5vw, 2rem); }
+  .cl-long { font-size: clamp(.9rem, 4.6vw, 1.2rem); }
+  .cl-go { display: none; }
 }
 
 /* ─── Screenshot/QA mode ─── */
