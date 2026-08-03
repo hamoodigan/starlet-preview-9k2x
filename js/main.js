@@ -8,6 +8,12 @@
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var shotMode = /[?&]shot/.test(location.search);   // static capture mode for QA screenshots
   if (shotMode) { reduceMotion = true; document.documentElement.classList.add("shot-mode"); }
+  var solo = shotMode && location.search.match(/solo=([a-z]+)/);   // QA: show one slide only
+  if (solo) {
+    document.querySelectorAll(".section").forEach(function (s) {
+      if (s.id !== solo[1]) s.style.display = "none";
+    });
+  }
 
   /* Marquees loop by scrolling to -50%, so each track needs its content twice. */
   document.querySelectorAll(".marquee-track, .ribbon-track").forEach(function (track) {
@@ -622,6 +628,65 @@
     }
     setTimeout(function () { requestAnimationFrame(tick); }, delay);
   }
+
+  /* ─────────────────────────────────────────────
+     8 · Influencer spotlight — three circles,
+     one hands its place to the next star in turn
+     ───────────────────────────────────────────── */
+  var SPOT_POOL = [
+    { handle: "@rayan_abualgasim_", img: "assets/clients/rayan.png", url: "https://www.instagram.com/rayan_abualgasim_/" },
+    { handle: "@lulitaa_jadkreem", img: "assets/clients/lulitaa.png", url: "https://www.instagram.com/lulitaa_jadkreem/" },
+    { handle: "@dr.duhaadam", img: "assets/clients/doha.png", url: "https://www.instagram.com/dr.duhaadam/" },
+    { handle: "@geebmaak.eg", img: "assets/clients/geebmaak.png", url: "https://www.instagram.com/geebmaak.eg/" },
+    { handle: "@clinica_dr.hind_anas", img: "assets/clients/hindanas.png", url: "https://www.instagram.com/clinica_dr.hind_anas/" },
+    { handle: "@jat_alseera", img: "assets/clients/jatalsera.png", url: "https://www.instagram.com/jat_alseera/" }
+  ];
+  var spotRow = document.getElementById("spotRow");
+  if (spotRow && !reduceMotion && !shotMode) {
+    var spots = spotRow.querySelectorAll(".spot");
+    var showing = [0, 1, 2];       // pool indices currently on screen
+    var slot = 0;                  // which circle swaps next
+    setInterval(function () {
+      // next profile: first pool member not currently visible
+      var next = -1;
+      for (var i = 0; i < SPOT_POOL.length; i++) {
+        var candidate = (showing[slot] + 1 + i) % SPOT_POOL.length;
+        if (showing.indexOf(candidate) === -1) { next = candidate; break; }
+      }
+      if (next === -1) return;
+      var el = spots[slot];
+      var p = SPOT_POOL[next];
+      el.classList.add("swap-out");
+      setTimeout(function () {
+        el.href = p.url;
+        el.querySelector(".spot-ring img").src = p.img;
+        el.querySelector(".spot-handle").textContent = p.handle;
+        el.classList.remove("swap-out");
+      }, 400);
+      showing[slot] = next;
+      slot = (slot + 1) % spots.length;
+    }, 3200);
+  }
+
+  /* ─────────────────────────────────────────────
+     9 · Reel embed — scale to fit its slide
+     ───────────────────────────────────────────── */
+  var reelScale = document.getElementById("reelScale");
+  function fitReel() {
+    if (!reelScale) return;
+    if (window.innerWidth <= 760) return;          // phones scroll naturally
+    var section = document.getElementById("reels");
+    var avail = section.clientHeight - 240;
+    var natural = reelScale.firstElementChild ? reelScale.firstElementChild.offsetHeight : 0;
+    if (natural < 120) natural = 720;              // embed not sized yet — assume typical reel
+    var s = Math.min(1, avail / natural);
+    reelScale.style.transform = "scale(" + s + ")";
+    reelScale.parentElement.style.height = (natural * s) + "px";
+  }
+  window.addEventListener("load", fitReel);
+  window.addEventListener("resize", function () { setTimeout(fitReel, 200); });
+  setTimeout(fitReel, 1600);                       // after embed.js hydrates
+  setTimeout(fitReel, 4000);
 
   var reachSection = document.getElementById("reach");
   var countersFired = false;
