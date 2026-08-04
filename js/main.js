@@ -644,49 +644,26 @@
   var spotRow = document.getElementById("spotRow");
   if (spotRow && !reduceMotion && !shotMode) {
     var spots = spotRow.querySelectorAll(".spot");
-    var showing = [0, 1, 2];       // pool indices currently on screen
-    var slot = 0;                  // which circle swaps next
+    var page = 0;
+    var pages = Math.ceil(SPOT_POOL.length / spots.length);
     setInterval(function () {
-      // next profile: first pool member not currently visible
-      var next = -1;
-      for (var i = 0; i < SPOT_POOL.length; i++) {
-        var candidate = (showing[slot] + 1 + i) % SPOT_POOL.length;
-        if (showing.indexOf(candidate) === -1) { next = candidate; break; }
-      }
-      if (next === -1) return;
-      var el = spots[slot];
-      var p = SPOT_POOL[next];
-      el.classList.add("swap-out");
+      // the whole trio drifts out with a gentle stagger…
+      spots.forEach(function (el, i) {
+        setTimeout(function () { el.classList.add("swap-out"); }, i * 160);
+      });
+      // …then three new stars rise in
       setTimeout(function () {
-        el.href = p.url;
-        el.querySelector(".spot-ring img").src = p.img;
-        el.querySelector(".spot-handle").textContent = p.handle;
-        el.classList.remove("swap-out");
-      }, 400);
-      showing[slot] = next;
-      slot = (slot + 1) % spots.length;
-    }, 3200);
+        page = (page + 1) % pages;
+        spots.forEach(function (el, i) {
+          var p = SPOT_POOL[(page * spots.length + i) % SPOT_POOL.length];
+          el.href = p.url;
+          el.querySelector(".spot-ring img").src = p.img;
+          el.querySelector(".spot-handle").textContent = p.handle;
+          setTimeout(function () { el.classList.remove("swap-out"); }, i * 160);
+        });
+      }, 1000);
+    }, 6000);
   }
-
-  /* ─────────────────────────────────────────────
-     9 · Reel embed — scale to fit its slide
-     ───────────────────────────────────────────── */
-  var reelScale = document.getElementById("reelScale");
-  function fitReel() {
-    if (!reelScale) return;
-    if (window.innerWidth <= 760) return;          // phones scroll naturally
-    var section = document.getElementById("reels");
-    var avail = section.clientHeight - 240;
-    var natural = reelScale.firstElementChild ? reelScale.firstElementChild.offsetHeight : 0;
-    if (natural < 120) natural = 720;              // embed not sized yet — assume typical reel
-    var s = Math.min(1, avail / natural);
-    reelScale.style.transform = "scale(" + s + ")";
-    reelScale.parentElement.style.height = (natural * s) + "px";
-  }
-  window.addEventListener("load", fitReel);
-  window.addEventListener("resize", function () { setTimeout(fitReel, 200); });
-  setTimeout(fitReel, 1600);                       // after embed.js hydrates
-  setTimeout(fitReel, 4000);
 
   var reachSection = document.getElementById("reach");
   var countersFired = false;
